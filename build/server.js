@@ -6,9 +6,13 @@ var _bodyParser = _interopRequireDefault(require("body-parser"));
 
 var _cors = _interopRequireDefault(require("cors"));
 
-var _logThemes = require("./src/logThemes");
+require("dotenv/config");
 
 var _regeneratorRuntime = _interopRequireDefault(require("regenerator-runtime"));
+
+var _logThemes = require("./src/logThemes");
+
+var _index = _interopRequireDefault(require("./routes/index"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -16,7 +20,6 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-// import router from './routes/index';
 var port = process.env.PORT || 4000;
 var app = (0, _express["default"])();
 app.use((0, _cors["default"])());
@@ -24,8 +27,8 @@ app.use(_bodyParser["default"].json());
 app.use(_express["default"].urlencoded({
   extended: true
 }));
-app.use(_express["default"].json()); // app.use(router);
-
+app.use(_express["default"].json());
+app.use(_index["default"]);
 app.get('/health', function (req, res) {
   _logThemes.log.status('Reached health endpoint');
 
@@ -52,5 +55,5 @@ process.on('SIGINT', /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRu
 app.listen(port, function (e) {
   if (e) _logThemes.log.error("well shoot. unable to start server on port: ".concat(port));
 
-  _logThemes.log.status("Hello, and welcome to champ-oauth-server-demo! Listening on port: ".concat(port));
+  _logThemes.log.status("Hello, and welcome to weather-dashboard-server! Listening on port: ".concat(port));
 });

@@ -1,11 +1,15 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { log } from './src/logThemes';
+import 'dotenv/config';
 import regeneratorRuntime from 'regenerator-runtime';
-// import router from './routes/index';
+import { log } from './src/logThemes';
+import router from './routes/index';
 
 const port = process.env.PORT || 4000;
+const NODE_ENV = process.env.NODE_ENV;
+
+console.log(NODE_ENV);
 
 const app = express();
 app.use(cors());
@@ -13,7 +17,7 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// app.use(router);
+app.use(router);
 
 app.get('/health', (req, res) => {
 	log.status('Reached health endpoint');
@@ -27,5 +31,5 @@ process.on('SIGINT', async () => { // for ctrl + c
 
 app.listen(port, (e) => {
 	if (e) log.error(`well shoot. unable to start server on port: ${port}`);
-	log.status(`Hello, and welcome to node-express-boilerplate! Listening on port: ${port}`);
+	log.status(`Hello, and welcome to weather-dashboard-server! Listening on port: ${port}`);
 });
