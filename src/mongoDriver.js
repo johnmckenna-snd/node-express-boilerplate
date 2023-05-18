@@ -1,33 +1,122 @@
 import { MongoClient } from 'mongodb';
-import dotenv from 'dotenv';
-dotenv.config();
+import { beginLogging } from '@sndwrks/lumberjack';
 
-const dbConnect = async () => {
-	const url = process.env.MONGO_DB_URL || 'mongodb://10.0.0.148:27017/';
-	const client = new MongoClient(url, {
-		useNewUrlParser: true,
-		useUnifiedTopology: true
-	});
-	try {
-		await client.connect();
-		console.log('connected to cluster');
-		return client;
-	} catch (err) {
-		console.log(err);
-	}
-};
+import config from '../config/config.js';
 
-export const mongoDBGetAddress = async ({targetDB, targetCollection, query}) => {
-	console.log('Here I go getting the address again:', query);
-	try {
-		const client = await dbConnect();
-		const db = client.db(targetDB);
-		console.log(`connected to db: ${db.namespace}`);
-		const result = await db.collection(targetCollection);
-		await client.close();
-		console.log('disconnected from db');
-		return result;
-	} catch (err) {
-		console.log(err);
-	}
-};
+const logger = beginLogging({ name: 'mongoDriver.js' });
+
+const {
+  MONGO_CONNECTION_STRING,
+  MONGO_DATABASE,
+} = config.db;
+
+let client = '';
+
+async function dbConnect () {
+  const newClient = new MongoClient(MONGO_CONNECTION_STRING, {
+    useUnifiedTopology: true,
+  });
+
+  try {
+    await newClient.connect();
+    logger.info('Connected to Database');
+
+    const collections = await newClient.db().listCollections().toArray();
+
+    logger.debug({ collections });
+
+    const collectionNames = collections.map((collection) => collection.name);
+
+    if (!collectionNames.includes('document-updates')) {
+      await newClient.db().createCollection('document-updates');
+      await newClient.db().collection('document-updates').createIndexes([
+        {
+          key: { clock: 1 },
+          name: 'clock',
+        },
+      ]);
+    }
+
+    logger.debug('Collections Created');
+  } catch (e) {
+    logger.error(e);
+  } finally {
+    client = newClient;
+  }
+}
+
+await dbConnect();
+
+const db = client.db(MONGO_DATABASE);
+
+process.on('SIGINT', () => {
+  client.close();
+});
+
+export async function mongoFind ({ collection, query, options }) {
+  logger.debug('mongoDriver mongoFind called');
+  try {
+    const result = await db.collection(collection).find(query, options).toArray();
+
+    return result;
+  } catch (e) {
+    logger.error(e);
+    return null;
+  }
+}
+
+export async function mongoFindDistinct ({
+  collection, distinctKey, query, options,
+}) {
+  try {
+    logger.debug({
+      collection, distinctKey, query, options,
+    });
+    const result = await db.collection(collection).distinct(distinctKey, query, options);
+
+    return result;
+  } catch (e) {
+    logger.error(e);
+    return null;
+  }
+}
+
+export async function mongoInsert ({ collection, objToInsert }) {
+  try {
+    logger.debug('mongoDriver mongoInsert called');
+    const result = await db.collection(collection).insertOne(objToInsert);
+
+    return result;
+  } catch (e) {
+    logger.error(e);
+    return null;
+  }
+}
+
+export async function mongoFindOneAndUpdate ({
+  collection, query, objToUpdate, options,
+}) {
+  logger.debug('mongoDriver mongoFindOneAndUpdate called', {
+    collection, query, objToUpdate, options,
+  });
+  try {
+    const result = await db.collection(collection).findOneAndUpdate(query, objToUpdate, options);
+
+    return result;
+  } catch (e) {
+    logger.error(e);
+    return null;
+  }
+}
+
+export async function mongoDeleteMany ({ collection, query, options }) {
+  logger.debug('mongoDriver mongoDeleteMany Called');
+  try {
+    const result = await db.collection(collection).deleteMany(query, options);
+
+    return result;
+  } catch (e) {
+    logger.error(e);
+    return null;
+  }
+}
