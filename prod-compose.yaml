@@ -1,0 +1,17 @@
+version: '3.7'
+
+networks:
+  main:
+    name: node-express-boilerplate-prod
+    driver: bridge
+
+services:
+  server:
+    container_name: node-express-boilerplate-server-prod
+    build:
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV
+    networks:
+      - main
+    restart: always
