@@ -25,9 +25,9 @@ async function dbConnect () {
 
     logger.debug({ collections });
 
-    const collectionNames = collections.map((collection) => collection.name);
+    const existingCollectionNames = collections.map((collection) => collection.name);
 
-    if (!collectionNames.includes('document-updates')) {
+    if (!existingCollectionNames.includes('document-updates')) {
       await newClient.db().createCollection('document-updates');
       await newClient.db().collection('document-updates').createIndexes([
         {
