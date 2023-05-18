@@ -1,5 +1,9 @@
-import express from 'express';
+import { Router } from 'express';
 
-const router = express.Router();
+import { templateRouter } from './templateRoute.js';
+
+const router = new Router();
+
+router.use('/v1', templateRouter);
 
 export default router;
