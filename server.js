@@ -6,7 +6,7 @@ import config from './config/config.js';
 
 import router from './routes/index.js';
 import contextAndLog from './middleware/contextAndLog.js';
-import normalizeResponseHandleErrors from './middleware/normalizeResponse.js';
+import normalizeResponse from './middleware/normalizeResponse.js';
 import logErrors from './middleware/logErrors.js';
 
 const { PORT } = config.server;
@@ -14,11 +14,11 @@ const logger = beginLogging({ name: 'server.js' });
 
 const app = express();
 
+app.use(contextAndLog());
+app.use(normalizeResponse());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(contextAndLog());
-app.use(normalizeResponseHandleErrors());
 
 app.use(router);
 
