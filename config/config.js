@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { configureLogger } from '@sndwrks/lumberjack';
 
 const { NODE_ENV, PORT, SERVICE_NAME } = process.env;
 
@@ -23,5 +24,7 @@ const config = {
     PORT: PORT || 4000,
   },
 };
+
+configureLogger(config.logger);
 
 export default config;

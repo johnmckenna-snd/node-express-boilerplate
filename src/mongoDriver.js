@@ -54,7 +54,7 @@ process.on('SIGINT', () => {
 });
 
 export async function mongoFind ({ collection, query, options }) {
-  logger.debug('mongoDriver mongoFind called');
+  logger.verbose('mongoDriver mongoFind called');
   try {
     const result = await db.collection(collection).find(query, options).toArray();
 
@@ -69,7 +69,7 @@ export async function mongoFindDistinct ({
   collection, distinctKey, query, options,
 }) {
   try {
-    logger.debug({
+    logger.verbose({
       collection, distinctKey, query, options,
     });
     const result = await db.collection(collection).distinct(distinctKey, query, options);
@@ -83,7 +83,7 @@ export async function mongoFindDistinct ({
 
 export async function mongoInsert ({ collection, objToInsert }) {
   try {
-    logger.debug('mongoDriver mongoInsert called');
+    logger.verbose('mongoDriver mongoInsert called');
     const result = await db.collection(collection).insertOne(objToInsert);
 
     return result;
@@ -96,7 +96,7 @@ export async function mongoInsert ({ collection, objToInsert }) {
 export async function mongoFindOneAndUpdate ({
   collection, query, objToUpdate, options,
 }) {
-  logger.debug('mongoDriver mongoFindOneAndUpdate called', {
+  logger.verbose('mongoDriver mongoFindOneAndUpdate called', {
     collection, query, objToUpdate, options,
   });
   try {
