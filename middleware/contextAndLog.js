@@ -12,6 +12,7 @@ function contextAndLog () {
       endpoint,
     };
 
+    logger.verbose({ body: req.body, headers: req.headers });
     logger.http({ context: { requestId, endpoint } });
 
     next();
