@@ -8,7 +8,10 @@ const config = {
     NODE_ENV,
   },
   logger: {
-    logToConsole: NODE_ENV !== 'production',
+    logToConsole: {
+      enabled: NODE_ENV !== 'production',
+      type: 'pretty',
+    },
     logToFiles: false,
     logLevel: NODE_ENV === 'production' ? 'http' : 'silly',
     service: SERVICE_NAME || 'node-express-boilerplate',
