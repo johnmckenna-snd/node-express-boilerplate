@@ -13,7 +13,7 @@
   "author": "john mckenna",
   "license": "MIT",
   "dependencies": {
-    "@sndwrks/lumberjack": "^0.3.0",
+    "@sndwrks/lumberjack": "^0.5.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
